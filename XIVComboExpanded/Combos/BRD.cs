@@ -34,6 +34,7 @@ internal static class BRD
             Ladonsbite = 25783,
             EmpyrealArrow = 3558,
             Sidewinder = 3562,
+            BlastArrow = 25784,
             RadiantFinale = 25785;
 
         public static class Buffs
@@ -94,7 +95,7 @@ internal class BardHeavyShot : CustomCombo
                 var gauge = GetJobGauge<BRDGauge>();
                 var wmCD = GetCooldown(BRD.WanderersMinuet);
 
-                if ((globalCD.CooldownRemaining > 0.7 && IsEnabled(CustomComboPreset.BardOGCDFeature)) && (gauge.Song != Song.ARMY || (gauge.Song == Song.ARMY && wmCD.CooldownRemaining > 30)))
+                if ((globalCD.CooldownRemaining > 0.7 && (gauge.Song != Song.ARMY || (gauge.Song == Song.ARMY && wmCD.CooldownRemaining > 30)))
                 {
                     var pitchCD = GetCooldown(BRD.PitchPerfect);
                     var bloodCD = GetCooldown(BRD.Bloodletter);
@@ -270,7 +271,7 @@ internal class BardRainOfDeath : CustomCombo
                 var gauge = GetJobGauge<BRDGauge>();
                 var wmCD = GetCooldown(BRD.WanderersMinuet);
 
-                if (globalCD.CooldownRemaining > 0.7 && IsEnabled(CustomComboPreset.BardOGCDFeature))
+                if (globalCD.CooldownRemaining > 0.7)
                 {
                     var pitchCD = GetCooldown(BRD.PitchPerfect);
                     var rainCD = GetCooldown(BRD.RainOfDeath);
