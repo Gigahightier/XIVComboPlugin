@@ -95,7 +95,7 @@ internal class BardHeavyShot : CustomCombo
                 var gauge = GetJobGauge<BRDGauge>();
                 var wmCD = GetCooldown(BRD.WanderersMinuet);
 
-                if ((globalCD.CooldownRemaining > 0.7 && (gauge.Song != Song.ARMY || (gauge.Song == Song.ARMY && wmCD.CooldownRemaining > 30)))
+                if ((globalCD.CooldownRemaining > 0.7) && (gauge.Song != Song.ARMY || (gauge.Song == Song.ARMY && wmCD.CooldownRemaining > 30)))
                 {
                     var pitchCD = GetCooldown(BRD.PitchPerfect);
                     var bloodCD = GetCooldown(BRD.Bloodletter);
