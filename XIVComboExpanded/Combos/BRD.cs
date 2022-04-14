@@ -8,104 +8,124 @@ internal static class BRD
     public const byte ClassID = 5;
     public const byte JobID = 23;
 
-    public const uint
-        HeavyShot = 97,
-        StraightShot = 98,
-        VenomousBite = 100,
-        RagingStrikes = 101,
-        QuickNock = 106,
-        Barrage = 107,
-        Bloodletter = 110,
-        Windbite = 113,
-        RainOfDeath = 117,
-        BattleVoice = 118,
-        EmpyrealArrow = 3558,
-        WanderersMinuet = 3559,
-        IronJaws = 3560,
-        Sidewinder = 3562,
-        PitchPerfect = 7404,
-        CausticBite = 7406,
-        Stormbite = 7407,
-        RefulgentArrow = 7409,
-        BurstShot = 16495,
-        ApexArrow = 16496,
-        Shadowbite = 16494,
-        Ladonsbite = 25783,
-        BlastArrow = 25784,
-        RadiantFinale = 25785;
+        public const uint
+            HeavyShot = 97,
+            StraightShot = 98,
+            VenomousBite = 100,
+            RagingStrikes = 101,
+            QuickNock = 106,
+            Barrage = 107,
+            Bloodletter = 110,
+            Windbite = 113,
+            RainOfDeath = 117,
+            BattleVoice = 118,
+            Peloton = 7557,
+            MagesBallad = 114,
+            ArmysPaeon = 116,
+            WanderersMinuet = 3559,
+            IronJaws = 3560,
+            PitchPerfect = 7404,
+            CausticBite = 7406,
+            Stormbite = 7407,
+            RefulgentArrow = 7409,
+            Shadowbite = 16494,
+            BurstShot = 16495,
+            ApexArrow = 16496,
+            Ladonsbite = 25783,
+            EmpyrealArrow = 3558,
+            Sidewinder = 3562,
+            RadiantFinale = 25785;
 
-    public static class Buffs
-    {
-        public const ushort
-            StraightShotReady = 122,
-            BlastShotReady = 2692,
-            ShadowbiteReady = 3002;
-    }
+        public static class Buffs
+        {
+            public const ushort
+                StraightShotReady = 122,
+                BlastShotReady = 2692,
+                ShadowbiteReady = 3002,
+                WanderersMinuet = 2216;
+        }
 
-    public static class Debuffs
-    {
-        public const ushort
-            VenomousBite = 124,
-            Windbite = 129,
-            CausticBite = 1200,
-            Stormbite = 1201;
-    }
+        public static class Debuffs
+        {
+            public const ushort
+                VenomousBite = 124,
+                Windbite = 129,
+                CausticBite = 1200,
+                Stormbite = 1201;
+        }
 
-    public static class Levels
-    {
-        public const byte
-            StraightShot = 2,
-            RagingStrikes = 4,
-            VenomousBite = 6,
-            Bloodletter = 12,
-            Windbite = 30,
-            RainOfDeath = 45,
-            BattleVoice = 50,
-            PitchPerfect = 52,
-            EmpyrealArrow = 54,
-            IronJaws = 56,
-            Sidewinder = 60,
-            BiteUpgrade = 64,
-            RefulgentArrow = 70,
-            Shadowbite = 72,
-            BurstShot = 76,
-            ApexArrow = 80,
-            Ladonsbite = 82,
-            BlastShot = 86,
-            RadiantFinale = 90;
+        public static class Levels
+        {
+            public const byte
+                StraightShot = 2,
+                RagingStrikes = 4,
+                VenomousBite = 6,
+                Bloodletter = 12,
+                Windbite = 30,
+                EmpyrealArrow = 54,
+                RainOfDeath = 45,
+                BattleVoice = 50,
+                PitchPerfect = 52,
+                IronJaws = 56,
+                Sidewinder = 60,
+                BiteUpgrade = 64,
+                RefulgentArrow = 70,
+                Shadowbite = 72,
+                BurstShot = 76,
+                WanderersMinuet = 52,
+                MagesBallad = 30,
+                ArmysPaeon = 40,
+                ApexArrow = 80,
+                Ladonsbite = 82,
+                BlastShot = 86,
+                RadiantFinale = 90;
+        }
     }
-}
 
 internal class BardHeavyShot : CustomCombo
 {
     protected internal override CustomComboPreset Preset { get; } = CustomComboPreset.BrdAny;
 
     protected override uint Invoke(uint actionID, uint lastComboMove, float comboTime, byte level)
-    {
-        if (actionID == BRD.HeavyShot || actionID == BRD.BurstShot)
         {
-            if (IsEnabled(CustomComboPreset.BardApexFeature))
+            if (actionID == BRD.HeavyShot || actionID == BRD.BurstShot)
             {
+                var globalCD = GetCooldown(BRD.HeavyShot);
                 var gauge = GetJobGauge<BRDGauge>();
+                var wmCD = GetCooldown(BRD.WanderersMinuet);
 
-                if (level >= BRD.Levels.BlastShot && HasEffect(BRD.Buffs.BlastShotReady))
-                    return BRD.BlastArrow;
+                if ((globalCD.CooldownRemaining > 0.7 && IsEnabled(CustomComboPreset.BardOGCDFeature)) && (gauge.Song != Song.ARMY || (gauge.Song == Song.ARMY && wmCD.CooldownRemaining > 30)))
+                {
+                    var pitchCD = GetCooldown(BRD.PitchPerfect);
+                    var bloodCD = GetCooldown(BRD.Bloodletter);
+                    var empCD = GetCooldown(BRD.EmpyrealArrow);
+                    var swCD = GetCooldown(BRD.Sidewinder);
 
-                if (level >= BRD.Levels.ApexArrow && gauge.SoulVoice == 100)
-                    return BRD.ApexArrow;
-            }
+                    if (!pitchCD.IsCooldown && gauge.Repertoire == 3 && gauge.Song == Song.WANDERER)
+                        return BRD.PitchPerfect;
 
-            if (IsEnabled(CustomComboPreset.BardStraightShotUpgradeFeature))
-            {
-                if (level >= BRD.Levels.StraightShot && HasEffect(BRD.Buffs.StraightShotReady))
-                    // Refulgent Arrow
+                    if (!bloodCD.IsCooldown)
+                        return BRD.Bloodletter;
+
+                    if (!empCD.IsCooldown && level >= BRD.Levels.EmpyrealArrow)
+                        return BRD.EmpyrealArrow;
+
+                    if (!swCD.IsCooldown && level >= BRD.Levels.Sidewinder)
+                        return BRD.Sidewinder;
+
+                    return BRD.Bloodletter;
+                }
+
+                // if (IsEnabled(CustomComboPreset.BardApexFeature) && (gauge.SoulVoice == 100 || OriginalHook(BRD.ApexArrow) != BRD.ApexArrow))
+                //    return OriginalHook(BRD.ApexArrow);
+
+                if (HasEffect(BRD.Buffs.StraightShotReady))
                     return OriginalHook(BRD.StraightShot);
             }
-        }
 
-        return actionID;
+            return actionID;
+        }
     }
-}
 
 internal class BardIronJaws : CustomCombo
 {
@@ -243,22 +263,45 @@ internal class BardRainOfDeath : CustomCombo
     protected internal override CustomComboPreset Preset { get; } = CustomComboPreset.BardRainOfDeathFeature;
 
     protected override uint Invoke(uint actionID, uint lastComboMove, float comboTime, byte level)
-    {
-        if (actionID == BRD.RainOfDeath)
         {
-            if (level >= BRD.Levels.Sidewinder)
-                return CalcBestAction(actionID, BRD.RainOfDeath, BRD.EmpyrealArrow, BRD.Sidewinder);
+            if (actionID == BRD.QuickNock || actionID == BRD.Ladonsbite)
+            {
+                var globalCD = GetCooldown(BRD.QuickNock);
+                var gauge = GetJobGauge<BRDGauge>();
+                var wmCD = GetCooldown(BRD.WanderersMinuet);
 
-            if (level >= BRD.Levels.EmpyrealArrow)
-                return CalcBestAction(actionID, BRD.RainOfDeath, BRD.EmpyrealArrow);
+                if (globalCD.CooldownRemaining > 0.7 && IsEnabled(CustomComboPreset.BardOGCDFeature))
+                {
+                    var pitchCD = GetCooldown(BRD.PitchPerfect);
+                    var rainCD = GetCooldown(BRD.RainOfDeath);
+                    var empCD = GetCooldown(BRD.EmpyrealArrow);
+                    var swCD = GetCooldown(BRD.Sidewinder);
 
-            if (level >= BRD.Levels.RainOfDeath)
-                return BRD.RainOfDeath;
+                    if (!pitchCD.IsCooldown && gauge.Repertoire == 3 && gauge.Song == Song.WANDERER)
+                            return BRD.PitchPerfect;
+
+                    if (!rainCD.IsCooldown)
+                        return BRD.RainOfDeath;
+
+                    if (!empCD.IsCooldown && level >= BRD.Levels.EmpyrealArrow)
+                            return BRD.EmpyrealArrow;
+
+                    if (!swCD.IsCooldown && level >= BRD.Levels.Sidewinder)
+                            return BRD.Sidewinder;
+
+                    return BRD.RainOfDeath;
+                }
+
+               // if (IsEnabled(CustomComboPreset.BardApexFeature) && (gauge.SoulVoice == 80 || OriginalHook(BRD.ApexArrow) != BRD.ApexArrow))
+                 //   return OriginalHook(BRD.ApexArrow);
+
+                if (HasEffect(BRD.Buffs.ShadowbiteReady))
+                    return OriginalHook(BRD.Shadowbite);
+            }
+
+            return actionID;
         }
-
-        return actionID;
     }
-}
 
 internal class BardSidewinder : CustomCombo
 {
