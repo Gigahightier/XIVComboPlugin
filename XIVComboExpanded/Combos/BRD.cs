@@ -63,6 +63,7 @@ internal static class BRD
                 VenomousBite = 6,
                 Bloodletter = 12,
                 Windbite = 30,
+                Barrage = 38,
                 EmpyrealArrow = 54,
                 RainOfDeath = 45,
                 BattleVoice = 50,
@@ -112,7 +113,7 @@ internal class BardHeavyShot : CustomCombo
                     if (!empCD.IsCooldown && level >= BRD.Levels.EmpyrealArrow)
                         return BRD.EmpyrealArrow;
                         
-                    if (!brgCD.IsCooldown(BRD.Barrage) && CanUseAction(BRD.Barrage) && !HasEffect(BRD.Buffs.StraightShotReady))
+                    if (!brgCD.IsCooldown && level >= BRD.Levels.Barrage && !HasEffect(BRD.Buffs.StraightShotReady))
                         return BRD.Barrage;
                         
                     if (!swCD.IsCooldown && level >= BRD.Levels.Sidewinder)
@@ -283,7 +284,7 @@ internal class BardRainOfDeath : CustomCombo
                     var swCD = GetCooldown(BRD.Sidewinder);
                     var brgCD = GetCooldown(BRD.Barrage);
                     
-                    if (!brgCD.IsCooldown(BRD.Barrage) && CanUseAction(BRD.Barrage) && HasEffect(BRD.Buffs.ShadowbiteReady))
+                    if (!brgCD.IsCooldown && level >= BRD.Levels.Barrage && HasEffect(BRD.Buffs.ShadowbiteReady))
                         return BRD.Barrage;
                     
                     if (!pitchCD.IsCooldown && gauge.Repertoire == 3 && gauge.Song == Song.WANDERER)
