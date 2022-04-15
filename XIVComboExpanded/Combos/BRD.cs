@@ -95,12 +95,13 @@ internal class BardHeavyShot : CustomCombo
                 var gauge = GetJobGauge<BRDGauge>();
                 var wmCD = GetCooldown(BRD.WanderersMinuet);
 
-                if ((globalCD.CooldownRemaining > 0.7) && (gauge.Song != Song.ARMY || (gauge.Song == Song.ARMY && wmCD.CooldownRemaining > 30)))
+                if ((globalCD.CooldownRemaining > 0.7) && (gauge.Song != Song.ARMY || (gauge.Song == Song.ARMY && (wmCD.CooldownRemaining > 20 || level <= 52))))
                 {
                     var pitchCD = GetCooldown(BRD.PitchPerfect);
                     var bloodCD = GetCooldown(BRD.Bloodletter);
                     var empCD = GetCooldown(BRD.EmpyrealArrow);
                     var swCD = GetCooldown(BRD.Sidewinder);
+                    var brgCD = GetCooldown(BRD.Barrage);
 
                     if (!pitchCD.IsCooldown && gauge.Repertoire == 3 && gauge.Song == Song.WANDERER)
                         return BRD.PitchPerfect;
@@ -110,7 +111,10 @@ internal class BardHeavyShot : CustomCombo
 
                     if (!empCD.IsCooldown && level >= BRD.Levels.EmpyrealArrow)
                         return BRD.EmpyrealArrow;
-
+                        
+                    if (!brgCD.IsCooldown(BRD.Barrage) && CanUseAction(BRD.Barrage) && !HasEffect(BRD.Buffs.StraightShotReady))
+                        return BRD.Barrage;
+                        
                     if (!swCD.IsCooldown && level >= BRD.Levels.Sidewinder)
                         return BRD.Sidewinder;
 
@@ -277,18 +281,22 @@ internal class BardRainOfDeath : CustomCombo
                     var rainCD = GetCooldown(BRD.RainOfDeath);
                     var empCD = GetCooldown(BRD.EmpyrealArrow);
                     var swCD = GetCooldown(BRD.Sidewinder);
-
+                    var brgCD = GetCooldown(BRD.Barrage);
+                    
+                    if (!brgCD.IsCooldown(BRD.Barrage) && CanUseAction(BRD.Barrage) && HasEffect(BRD.Buffs.ShadowbiteReady))
+                        return BRD.Barrage;
+                    
                     if (!pitchCD.IsCooldown && gauge.Repertoire == 3 && gauge.Song == Song.WANDERER)
-                            return BRD.PitchPerfect;
+                        return BRD.PitchPerfect;
 
                     if (!rainCD.IsCooldown)
                         return BRD.RainOfDeath;
 
                     if (!empCD.IsCooldown && level >= BRD.Levels.EmpyrealArrow)
-                            return BRD.EmpyrealArrow;
+                        return BRD.EmpyrealArrow;
 
                     if (!swCD.IsCooldown && level >= BRD.Levels.Sidewinder)
-                            return BRD.Sidewinder;
+                        return BRD.Sidewinder;
 
                     return BRD.RainOfDeath;
                 }
@@ -351,7 +359,7 @@ internal class BardRadiantFinale : CustomCombo
                     return BRD.RagingStrikes;
             }
 
-            if (IsEnabled(CustomComboPreset.BardRadiantVoiceFeature))
+            if (IsEnabled(CustomComboPreset.BardRadiantVoiceFeature) && !IsOffCooldown(BRD.RadiantFinale))
             {
                 if (level >= BRD.Levels.BattleVoice && IsOffCooldown(BRD.BattleVoice))
                     return BRD.BattleVoice;
